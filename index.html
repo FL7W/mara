@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>💌 A Little Something For You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --rose:  #e8304a;
+      --blush: #f9c6cf;
+      --deep:  #8b1a2f;
+      --cream: #fff6f8;
+      --text:  #3a1520;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Lora', serif;
+      background: var(--cream);
+      overflow-x: hidden;
+      color: var(--text);
+    }
+
+    /* ── Floating hearts ── */
+    .hearts-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .heart-float {
+      position: absolute;
+      bottom: -60px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(-10deg); opacity: 0; }
+      10%  { opacity: 0.3; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(-110vh) rotate(10deg); opacity: 0; }
+    }
+
+    /* ── Pages ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100svh;
+      padding: 1.2rem 1rem;
+      animation: fadeIn 0.7s ease;
+    }
+    .page.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Card ── */
+    .card {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(232,48,74,0.2);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(232,48,74,0.13), 0 2px 8px rgba(139,26,47,0.08);
+      text-align: center;
+    }
+
+    .stamp {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      color: var(--rose);
+      margin-bottom: 1.2rem;
+      line-height: 1.25;
+    }
+
+    .story {
+      font-size: 0.97rem;
+      line-height: 1.9;
+      color: var(--text);
+      font-style: italic;
+      text-align: left;
+    }
+    .story strong {
+      font-style: normal;
+      color: var(--deep);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin: 1.5rem 0 0.5rem;
+      color: var(--blush);
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--blush);
+    }
+
+    /* ── Next button ── */
+    .btn-next {
+      margin-top: 1.4rem;
+      background: linear-gradient(135deg, var(--rose), var(--deep));
+      color: #fff;
+      border: none;
+      padding: 1rem 2.2rem;
+      border-radius: 50px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      box-shadow: 0 4px 18px rgba(232,48,74,0.38);
+      width: 100%;
+      max-width: 320px;
+      min-height: 54px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-next:active { transform: scale(0.96); }
+
+    /* ── Page 2 question ── */
+    .question {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--deep);
+      margin: 0.8rem 0 1.6rem;
+      line-height: 1.3;
+    }
+
+    /* Fixed-height area so the card doesn't jump around */
+    .btn-area {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .btn-yes, .btn-no {
+      border: none;
+      border-radius: 50px;
+      font-family: 'Playfair Display', serif;
+      cursor: pointer;
+      white-space: nowrap;
+      position: absolute;
+      transition: font-size 0.4s ease, padding 0.4s ease, opacity 0.4s ease, transform 0.35s ease;
+      touch-action: manipulation;
+    }
+
+    /* YES starts left-center */
+    .btn-yes {
+      background: linear-gradient(135deg, var(--rose), #c0203a);
+      color: #fff;
+      font-size: 1.15rem;
+      padding: 0.9rem 2.2rem;
+      box-shadow: 0 4px 20px rgba(232,48,74,0.4);
+      z-index: 2;
+      top: 50%;
+      left: 30%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* NO starts right-center */
+    .btn-no {
+      background: #efefef;
+      color: #aaa;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.6rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      z-index: 1;
+      top: 50%;
+      right: 8%;
+      transform: translateY(-50%);
+      min-height: 48px;
+    }
+
+    /* ── Hint text ── */
+    #noCount {
+      margin-top: 0.5rem;
+      color: #c4a0a8;
+      font-size: 0.82rem;
+      font-style: italic;
+      min-height: 1.3em;
+    }
+
+    /* ── Success page ── */
+    #page-yes .card { border-color: rgba(232,48,74,0.35); }
+    .confetti-msg {
+      font-size: 2.8rem;
+      margin-bottom: 0.4rem;
+      animation: bounce 0.9s infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-10px); }
+    }
+    .yes-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      color: var(--rose);
+      margin: 0.7rem 0 0.9rem;
+    }
+    .yes-sub {
+      color: #7a3040;
+      font-style: italic;
+      font-size: 0.97rem;
+      line-height: 1.75;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- ══════════ PAGE 1 ══════════ -->
+<div class="page active" id="page-story">
+  <div class="card">
+    <span class="stamp">💌</span>
+    <h1>How Our Story Began</h1>
+
+    <p class="story">
+      <strong>18 September 2022</strong>, our special day back then. Still feels quite special to me.
+      I remember the good, the bad, and the most important part: <strong>all the love we still have for each other.</strong><br/><br/>
+
+      Maybe it was the way we laughed, the way we felt, the way we're just so happy when we're together —
+      without even trying.<br/><br/>
+
+      We had our mistakes, but after a while and after a lot of distance, pain and working on ourselves,
+      we ended up <strong>finding each other again.</strong> We still have so much more to go, and it won't be easy at all.
+      I hope we can get through all of this together by believing in what we have and that
+      nothing could take us away from each other.<br/><br/>
+
+      We're not really there yet to take the next steps, but I feel like you deserve something
+      as cute and precious just like you. Take this as my apology and my appreciation to you.<br/><br/>
+
+      Hope to stay your one and only — the one you always come back to. And as long as you do,
+      <strong>I promise to not break your heart like I did.</strong><br/><br/>
+
+      So… even if we don't do anything…
+    </p>
+
+    <div class="divider">❤️</div>
+
+    <button class="btn-next" onclick="goToPage2()">There's something I want to ask →</button>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 2 ══════════ -->
+<div class="page" id="page-question">
+  <div class="card">
+    <span class="stamp">🌹</span>
+    <p class="question">Will you be my<br/>Valentine?</p>
+
+    <div class="btn-area" id="btnArea">
+      <button class="btn-yes" id="btnYes" onclick="sayYes()">Yes! 💕</button>
+      <button class="btn-no"  id="btnNo"  onclick="pressedNo()">No</button>
+    </div>
+    <p id="noCount"></p>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 3 ══════════ -->
+<div class="page" id="page-yes">
+  <div class="card">
+    <div class="confetti-msg">🎉💖🎉</div>
+    <p class="yes-text">Yay!! I'm so happy! 💕</p>
+    <p class="yes-sub">
+      You just made me the happiest person in the world.<br/>
+      Happy Valentine's Day, my love. ❤️
+    </p>
+  </div>
+</div>
+
+<script>
+  // ── Floating hearts ──
+  const bg = document.getElementById('heartsBg');
+  const emojis = ['❤️','🩷','💕','💗','💓','💞','🌹','💌'];
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.left = (Math.random() * 100) + 'vw';
+    h.style.fontSize = (0.8 + Math.random() * 1.1) + 'rem';
+    const dur = 9 + Math.random() * 13;
+    h.style.animation = `floatUp ${dur}s ${-(Math.random() * dur)}s linear infinite`;
+    bg.appendChild(h);
+  }
+
+  // ── Navigation ──
+  function goToPage2() {
+    document.getElementById('page-story').classList.remove('active');
+    document.getElementById('page-question').classList.add('active');
+  }
+
+  function sayYes() {
+    document.getElementById('page-question').classList.remove('active');
+    document.getElementById('page-yes').classList.add('active');
+    burst();
+  }
+
+  // ── No button logic ──
+  let noPresses = 0;
+  const phrases = [
+    "Are you sure? 🥺",
+    "Pleeeease? 🌹",
+    "Think again! 💕",
+    "Wrong button! 😅",
+    "That can't be right…",
+    "Give it another shot!",
+    "Almost there… 💖",
+  ];
+
+  function pressedNo() {
+    noPresses++;
+    const yes  = document.getElementById('btnYes');
+    const no   = document.getElementById('btnNo');
+    const hint = document.getElementById('noCount');
+
+    // Grow YES — capped so it doesn't escape the card on small screens
+    const newSize = Math.min(1.15 + noPresses * 0.4, 4.2);
+    const newPad  = Math.min(0.9  + noPresses * 0.3, 2.4);
+    yes.style.fontSize = newSize + 'rem';
+    yes.style.padding  = newPad + 'rem ' + (newPad * 2) + 'rem';
+
+    // Shrink & fade NO
+    const s = Math.max(0.1, 1 - noPresses * 0.13);
+    const o = Math.max(0,   1 - noPresses * 0.18);
+    no.style.opacity   = o;
+    no.style.transform = `translateY(-50%) scale(${s})`;
+
+    hint.textContent = phrases[Math.min(noPresses - 1, phrases.length - 1)];
+
+    if (noPresses >= 7) {
+      no.style.display = 'none';
+      hint.textContent = "There's only one option now 💕";
+    }
+  }
+
+  // ── Celebration burst ──
+  function burst() {
+    for (let i = 0; i < 22; i++) {
+      setTimeout(() => {
+        const h = document.createElement('div');
+        h.style.cssText = `
+          position: fixed;
+          font-size: ${1 + Math.random() * 1.8}rem;
+          left: ${Math.random() * 100}vw;
+          top: ${15 + Math.random() * 65}vh;
+          pointer-events: none;
+          z-index: 999;
+          animation: floatUp ${2 + Math.random() * 2}s ease forwards;
+        `;
+        h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 4000);
+      }, i * 70);
+    }
+  }
+</script>
+</body>
+</html>
